@@ -53,7 +53,20 @@ onMounted(async () => {
 
 // Handle moves from the Chessboard component
 async function onMove({ from, to }) {
-  
+  console.log('Move from:', from, 'to:', to);
+  try{
+    const result = await api.movePiece(gameId.value, from, to);
+    console.log('Move result:', result.data);
+    if (result.status === 'ok') {
+      // Update the board and captured pieces
+      fen.value = result.data.fen;
+      captured.value = result.data.captured;
+    } else {
+      console.error('Move failed:', result.data.message);
+    }
+  }catch (error) {
+    console.error('Error making move:', error);
+  }
 } 
 
 

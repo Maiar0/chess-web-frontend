@@ -43,7 +43,7 @@ export default class ChessApi {
      * @param {{x:number,y:number}} from  
      * @param {{x:number,y:number}} to  
      */
-    move(gameId, from, to){
+    movePiece(gameId, from, to){
         return this.request('move', gameId, { from: from, to: to });
     }
 }

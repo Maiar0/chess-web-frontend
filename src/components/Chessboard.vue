@@ -1,14 +1,19 @@
 <template>
   <div class="chessboard">
-    <div 
-      v-for="(rank, y) in board" 
-      :key="y" 
+    <div
+      v-for="(rank, y) in board"
+      :key="y"
       class="rank"
     >
       <div
         v-for="(cell, x) in rank"
         :key="x"
         class="square"
+        :class="{
+          dark:       (x + y) % 2 === 0,
+          selected:   isSelected(x, y)
+        }"
+        @click="handleSquareClick(x, y)"
       >
         <span v-if="cell">{{ cell }}</span>
       </div>
@@ -17,7 +22,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue'
+import { defineProps, computed, ref } from 'vue'
 
 const props = defineProps({
   fen: {
@@ -26,30 +31,19 @@ const props = defineProps({
   }
 })
 console.log('props.fen', props.fen)
-const selected = ref(null);
+const selected = ref(null);// selected square coordinates
 
-/**
- * Parses FEN and returns a 2D array [rank][file] of single-character strings or null.
- */
 function createBoard(fen) {
   const board = Array.from({ length: 8 }, () => Array(8).fill(null))
-  if (!fen) {
-    console.error('FEN string is empty or invalid')
-    return board;
-  }
-  const rows = fen.split(' ')[0].split('/')
-  console.log('rows', rows)
-  // Iterate over ranks (0-7) from top to bottom
-  
-  for (let rankIndex = 0; rankIndex < 8; rankIndex++) {
+  const rows  = fen.split(' ')[0].split('/')
+  for (let i = 0; i < 8; i++) {
     let file = 0
-    const row = rows[rankIndex]
-    for (const ch of row) {
+    for (const ch of rows[i]) {
       if (/\d/.test(ch)) {
-        file += parseInt(ch, 10)
+        file += +ch
       } else {
-        board[rankIndex][file] = ch
-        file++
+        const y = 7 - i   // rank i → y
+        board[y][file++] = ch
       }
     }
   }
@@ -57,6 +51,30 @@ function createBoard(fen) {
 }
 
 const board = computed(() => createBoard(props.fen))
+
+// helper to test if square is selected
+function isSelected(x, y) {
+  return selected.value?.x === x && selected.value?.y === y
+}
+
+// when user clicks any square
+function handleSquareClick(x, y) {
+  const piece = board.value[y][x]
+  if (selected.value === null) {
+    // first click: only select if there is a piece
+    if (piece) selected.value = { x, y }
+  } else {
+    // second click: emit move from→to, then clear selection
+    const from = { ...selected.value }
+    const to   = { x, y }
+    // emit `move` event to parent
+    emit('move', { from, to })
+    selected.value = null
+  }
+}
+
+// need to define emits in <script setup>
+const emit = defineEmits(['move'])
 </script>
 
 <style scoped>
@@ -67,12 +85,15 @@ const board = computed(() => createBoard(props.fen))
   /* optional fixed size or ratio */
   width: 400px;
   height: 400px;
+  transform: rotate(-90deg);
   border: 2px solid #333;
 }
 
 .square {
+  transform: rotate(90deg);
   /* each square is a cell in that grid */
   aspect-ratio: 1;
+  transform: 90deg;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,8 +104,14 @@ const board = computed(() => createBoard(props.fen))
   /* alternate light/dark background */
   background-color: #f0d9b5;
 }
+/* optional highlight on selection */
+.square.selected {
+  outline: 3px solid yellow;
+  outline-offset: -2px;
+}
 
-.square:nth-child(odd) {
+/* dark coloring for (x+y)%2===0 */
+.square.dark {
   background-color: #b58863;
 }
 </style>
