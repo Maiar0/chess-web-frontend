@@ -15,6 +15,7 @@
     text-align: center;
     position: fixed;
     bottom: 0;
+    height: 1vh;
     width: 100%;
     left: 0;
 }
