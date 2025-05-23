@@ -4,7 +4,7 @@
     <CapturedPieces
       class="captures"
       side="white"
-      :pieces="captured"
+      :pieces="capturedWhite"
     />
 
     <!-- Main Chessboard -->
@@ -19,12 +19,12 @@
     <CapturedPieces
       class="captures"
       side="black"
-      :pieces="captured"
+      :pieces="capturedBlack"
     />
   </div>
 </template>
 <script setup> 
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import { useRoute } from 'vue-router';
 import Chessboard from '../components/Chessboard.vue';
 import CapturedPieces from '../components/CapturedPieces.vue';
@@ -34,7 +34,23 @@ const route = useRoute();
 const api = new ChessApi('http://localhost:5000');
 
 const fen = ref('');
-const captured = ref([]);
+const captured = ref('');
+
+// Computed: all the white‐captured letters
+const capturedWhite = computed(() => {
+  // split into chars, keep only [A–Z]
+  return captured.value
+    .split('')
+    .filter(c => /[A-Z]/.test(c))
+})
+
+// Computed: all the black‐captured letters
+const capturedBlack = computed(() => {
+  // split into chars, keep only [a–z]
+  return captured.value
+    .split('')
+    .filter(c => /[a-z]/.test(c))
+})
 const gameId = ref('');
 
 
@@ -45,7 +61,7 @@ onMounted(async () => {
     console.log('Game data:', result.data);
     gameId.value = result.data.gameId;
     fen.value = result.data.fen;
-    captured.value = result.data.captured;
+    captured.value = String(result.data.captured || '');
   }catch(error) {
     console.error('Error fetching game data:', error);
   }
@@ -68,6 +84,7 @@ async function onMove({ from, to }) {
     console.error('Error making move:', error);
   }
 } 
+
 
 
 </script>
