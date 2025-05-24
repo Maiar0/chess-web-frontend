@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <NavBar />
-    <router-view />        <!-- ← the “page” placeholder -->
+    <main class="content">
+      <router-view />
+    </main>
     <Footer />
   </div>
 </template>
@@ -10,4 +12,11 @@
 import NavBar from './components/NavBar.vue'
 import Footer from './components/Footer.vue'
 </script>
-<style> </style>
+<style>
+.content {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  /* center the bleed */
+  padding: 0;
+}
+</style>

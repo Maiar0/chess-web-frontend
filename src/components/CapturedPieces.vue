@@ -1,18 +1,12 @@
 <template>
   <div class="captured-pieces">
-    {{side}}
-    <div
-      v-for="(p, i) in pieces"
-      :key="i"
-      class="captured-square"
-    >
+    <div v-for="(p, i) in pieces" :key="i" class="captured-square">
       <span>{{ p }}</span>
     </div>
-    {{pieces}}
   </div>
 </template>
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps, watch } from 'vue'
 
 const props = defineProps({
   side: {
@@ -24,6 +18,14 @@ const props = defineProps({
     required: true
   }
 })
+watch(
+  () => props.pieces,
+  newVal => {
+    console.log(`[CapturedPieces:${props.side}] pieces changed:`, newVal)
+  },
+  { immediate: true }   // also fire once immediately
+)
+
 </script>
 <style scoped>
 .captured-pieces {
@@ -36,6 +38,7 @@ const props = defineProps({
   border-radius: 0.25rem;
   /* optional: different background per side */
 }
+
 .captured-pieces[data-side="black"] {
   background: var(--board-dark);
 }
@@ -46,7 +49,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: #b58863;
   border: 1px solid #999;
   font-size: 1.25rem;
   user-select: none;

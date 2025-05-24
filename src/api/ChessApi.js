@@ -1,6 +1,6 @@
 export default class ChessApi {
     constructor(baseUrl = '/api/chess/action') {
-        baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
+        //baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
         this.baseUrl = baseUrl + '/api/chess/action';
     }
     
@@ -39,7 +39,7 @@ export default class ChessApi {
         return this.request('info', gameId, {});
     }
     /**
-     * Send a move from → to.
+     * Send a move from to.
      * @param {string} gameId  
      * @param {{x:number,y:number}} from  
      * @param {{x:number,y:number}} to  
