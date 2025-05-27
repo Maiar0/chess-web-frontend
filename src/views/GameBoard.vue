@@ -9,6 +9,7 @@
     <div class="board-area">
       <Chessboard class="board" v-if="fen" :fen="fen" @move="onMove" />
     </div>
+      <MessagePopup :message="errorMessage" :visible="showError" />
   </div>
 </template>
 <script setup>
@@ -17,6 +18,7 @@ import { useRoute } from 'vue-router';
 import Chessboard from '../components/Chessboard.vue';
 import CapturedPieces from '../components/CapturedPieces.vue';
 import GameStatus from '../components/GameStatus.vue';
+import MessagePopup from '../components/MessagePopup.vue';
 import ChessApi from '../api/ChessApi';
 
 const route = useRoute();
@@ -68,7 +70,8 @@ async function onMove({ from, to }) {
       console.error('Move failed:', result.data.message);
     }
   } catch (error) {
-    console.error('Error making move:', error);
+    console.error(`Code: ${error.code}, Message: ${error.message}`);
+    showErrorPopup(`${error.code}: ${error.message}`);
   }
 }
 //Updates props for components
@@ -81,6 +84,14 @@ function updateValues(result) {
   fullMove.value = fen.value.split(' ')[4];
   halfMove.value = fen.value.split(' ')[5];
 }
+let errorMessage = ref('');
+let showError = ref(false);
+function showErrorPopup(msg){
+    errorMessage.value = msg;
+    showError.value = true;
+    setTimeout(() => showError.value = false, 3000); // Hide after 3s
+}
+
 </script>
 <style scoped>
 .gameboard {
@@ -112,8 +123,8 @@ function updateValues(result) {
 }
 
 .captures {
-  position: center;
   display: flex;
+  justify-content: center;
   gap: 0.5rem;
 }
 

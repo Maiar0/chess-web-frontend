@@ -1,6 +1,6 @@
 export default class ChessApi {
     constructor(baseUrl = '/api/chess/action') {
-        //baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
+        baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
         this.baseUrl = baseUrl + '/api/chess/action';
     }
     
@@ -25,8 +25,10 @@ export default class ChessApi {
             body: JSON.stringify({ action, gameId, payload })
         });
         if (!res.ok) {
-            const text = await res.text();
-            throw new Error(`ChessApi error ${res.status}: ${text}`);
+            const { error } = await res.json();
+            const err = new Error(error.message);
+            err.code = error.code;
+            throw err;
         }
         return res.json();
     }
