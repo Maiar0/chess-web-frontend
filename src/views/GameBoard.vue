@@ -61,10 +61,11 @@ onMounted(async () => {
 });
 
 // Handle moves from the Chessboard component
-async function onMove({ from, to }) {
+async function onMove({ from, to, promotionChoice }) {
   console.log('Move from:', from, 'to:', to);
   try {
-    const result = await api.movePiece(gameId.value, from, to);
+    console.log('Promotion Char:', promotionChoice);
+    const result = await api.movePiece(gameId.value, from, to, promotionChoice.value);
     console.log('Move result:', result.data);
     if (result.status === 'ok') {
       // Update the board and captured pieces
@@ -89,6 +90,7 @@ function updateValues(result) {
   fullMove.value = fen.value.split(' ')[4];
   halfMove.value = fen.value.split(' ')[5];
 }
+//handles error messages
 let errorMessage = ref('');
 let showError = ref(false);
 function showErrorPopup(msg) {
