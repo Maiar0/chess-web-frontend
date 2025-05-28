@@ -4,20 +4,40 @@
     <p><strong>Turn:</strong> {{ activeColor === 'w' ? 'White' : 'Black' }}</p>
     <p><strong>Move Counter:</strong> {{ fullMove }}</p>
     <p><strong>Half-Move Counter:</strong> {{ halfMove }}</p>
-    <p><strong>InCheck:</strong> {{ inCheck }}</p>
+    <p><strong>In Check:</strong> {{ inCheck }}</p>
+    <p><strong>Check Mate:</strong> {{ checkMate }}</p>
+    <p><strong>Time Elapsed:</strong> {{ formattedTime }}</p>
   </div>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
+import { defineProps, ref, onMounted, onBeforeUnmount, computed } from 'vue'
 const props = defineProps({
   gameId: { type: String, required: true },
   activeColor: { type: String, required: true }, // 'w' or 'b'
   fullMove: { type: String, required: true },
   halfMove: { type: String, required: true },
-  inCheck: { type: Boolean, required: true }
+  inCheck: { type: Boolean, required: true },
+  checkMate: { type: Boolean, required: true },
 })
+//TODO:: Timer needs WORK
+const timeElapsed = ref(0);
+let timer = null;
+onMounted(() => {
+  timer = setInterval(() => {
+    timeElapsed.value += 1;
+  }, 1000);
+});
+
+onBeforeUnmount(() => {
+  clearInterval(timer);
+});
+
+const formattedTime = computed(() => {
+  const minutes = String(Math.floor(timeElapsed.value / 60)).padStart(2, '0');
+  const seconds = String(timeElapsed.value % 60).padStart(2, '0');
+  return `${minutes}:${seconds}`;
+});
 </script>
 
 <style scoped>

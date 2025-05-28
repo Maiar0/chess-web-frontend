@@ -1,7 +1,12 @@
 export default class ChessApi {
     constructor(baseUrl = '/api/chess/action') {
-        baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
+        //baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
         this.baseUrl = baseUrl + '/api/chess/action';
+        this.playerId = localStorage.getItem('chess-player-uuid');
+        if (!this.playerId) {
+            this.playerId = crypto.randomUUID();
+            localStorage.setItem('chess-player-uuid', this.playerId);
+        }
     }
     
     /**
@@ -22,7 +27,7 @@ export default class ChessApi {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ action, gameId, payload })
+            body: JSON.stringify({ action, gameId, payload, playerId: this.playerId })
         });
         if (!res.ok) {
             const { error } = await res.json();

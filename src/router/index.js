@@ -4,6 +4,7 @@ import GameBoard from '../views/GameBoard.vue'
 import About     from '../views/About.vue'
 
 const routes = [
+  { path: '/',              component: Home },
   { path: '/home',          component: Home },
   { path: '/about',         component: About },
   { path: '/game/:gameId',  component: GameBoard, props: true }

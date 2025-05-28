@@ -3,13 +3,13 @@
     <div class="right-gameboard">
       <CapturedPieces class="captures captures--white" side="white" :pieces="capturedWhite" />
       <GameStatus :gameId="gameId" :activeColor="activeColor" :fullMove="fullMove" :halfMove="halfMove"
-        :inCheck="inCheck" />
+        :inCheck="inCheck" :checkMate="checkMate" />
       <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
     </div>
     <div class="board-area">
       <Chessboard class="board" v-if="fen" :fen="fen" @move="onMove" />
     </div>
-      <MessagePopup :message="errorMessage" :visible="showError" />
+    <MessagePopup :message="errorMessage" :visible="showError" />
   </div>
 </template>
 <script setup>
@@ -46,6 +46,8 @@ const activeColor = ref('')
 const fullMove = ref('');
 const halfMove = ref('');
 const inCheck = ref('');
+const checkMate = ref('');
+
 //Handles preload call
 onMounted(async () => {
   try {
@@ -57,6 +59,7 @@ onMounted(async () => {
     console.error('Error fetching game data:', error);
   }
 });
+
 // Handle moves from the Chessboard component
 async function onMove({ from, to }) {
   console.log('Move from:', from, 'to:', to);
@@ -74,6 +77,7 @@ async function onMove({ from, to }) {
     showErrorPopup(`${error.code}: ${error.message}`);
   }
 }
+
 //Updates props for components
 function updateValues(result) {
   gameId.value = result.data.gameId;
@@ -81,15 +85,16 @@ function updateValues(result) {
   captured.value = result.data.capturedPieces;
   activeColor.value = result.data.activeColor;
   inCheck.value = result.data.inCheck;
+  checkMate.value = result.data.checkMate;
   fullMove.value = fen.value.split(' ')[4];
   halfMove.value = fen.value.split(' ')[5];
 }
 let errorMessage = ref('');
 let showError = ref(false);
-function showErrorPopup(msg){
-    errorMessage.value = msg;
-    showError.value = true;
-    setTimeout(() => showError.value = false, 3000); // Hide after 3s
+function showErrorPopup(msg) {
+  errorMessage.value = msg;
+  showError.value = true;
+  setTimeout(() => showError.value = false, 3000); // Hide after 3s
 }
 
 </script>

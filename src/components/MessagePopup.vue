@@ -1,9 +1,6 @@
 <template>
   <transition name="fade">
-    <div
-      v-if="visible"
-      class="message-popup"
-    >
+    <div v-if="visible" class="message-popup">
       {{ message }}
     </div>
   </transition>
@@ -27,15 +24,20 @@ export default {
 <style scoped>
 .message-popup {
   position: fixed;
-  bottom: 1rem; /* Tailwind's bottom-4 = 1rem */
+  bottom: 75%;
+  /* Tailwind's bottom-4 = 1rem */
   left: 50%;
   transform: translateX(-50%);
-  background-color: #dc2626; /* Tailwind's red-600 */
+  background-color: #dc2626;
+  /* Tailwind's red-600 */
   color: white;
-  padding: 0.75rem 1.5rem; /* px-6 py-3 */
-  border-radius: 0.5rem; /* rounded */
+  padding: 0.75rem 1.5rem;
+  /* px-6 py-3 */
+  border-radius: 0.5rem;
+  /* rounded */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-              0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  /* shadow-lg */
   z-index: 50;
 }
 
@@ -43,6 +45,7 @@ export default {
 .fade-leave-active {
   transition: opacity 0.3s;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
