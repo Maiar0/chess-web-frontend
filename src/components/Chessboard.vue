@@ -15,7 +15,7 @@
             dark: (x + y) % 2 === 0,
             selected: isSelected(x, y)
           }" @click="handleSquareClick(x, y)">
-            <span v-if="cell">{{ pieceMap[cell] }}</span>
+            <img v-if="cell" :src="pieceImageMap[cell]" class="chess-piece" :alt="cell" />
           </div>
         </div>
       </div>
@@ -27,12 +27,8 @@
     <div class="files files--bottom">
       <span v-for="f in files" :key="f">{{ f }}</span>
     </div>
-    <ChoicePopup
-      v-if="showPopup"
-      :message="'Promote to:'"
-      :choices="['Queen', 'Rook', 'Bishop', 'Knight']"
-      @select="handlePromotion"
-    />
+    <ChoicePopup v-if="showPopup" :message="'Promote to:'" :choices="['Queen', 'Rook', 'Bishop', 'Knight']"
+      @select="handlePromotion" />
   </div>
 
 </template>
@@ -53,10 +49,22 @@ const props = defineProps({
 console.log('props.fen', props.fen)
 const selected = ref(null);// selected square coordinates
 
-const pieceMap = {
-  K: '♔', Q: '♕', R: '♖', B: '♗', N: '♘', P: '♙',
-  k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟︎'
-}
+const pieceImageMap = {
+  K: '/chesssprites/wk.png',
+  Q: '/chesssprites/wq.png',
+  R: '/chesssprites/wr.png',
+  B: '/chesssprites/wb.png',
+  N: '/chesssprites/wn.png',
+  P: '/chesssprites/wp.png',
+  k: '/chesssprites/bk.png',
+  q: '/chesssprites/bq.png',
+  r: '/chesssprites/br.png',
+  b: '/chesssprites/bb.png',
+  n: '/chesssprites/bn.png',
+  p: '/chesssprites/bp.png',
+};
+
+
 
 function createBoard(fen) {
   const board = Array.from({ length: 8 }, () => Array(8).fill(null))
@@ -87,7 +95,7 @@ const promotionChoice = ref('');
 function handlePromotion(choice) {
   promotionChoice.value = 'Q'
   showPopup.value = false
-  
+
 }
 // when user clicks any square
 function handleSquareClick(x, y) {
@@ -100,11 +108,11 @@ function handleSquareClick(x, y) {
     const from = { ...selected.value }
     const to = { x, y }
     // emit `move` event to parent
-    if(ChessUtil.checkPromotion(y, board.value[from.y][from.x])){
+    if (ChessUtil.checkPromotion(y, board.value[from.y][from.x])) {
       console.log('Promotion needed!');
       showPopup.value = true;
       //TODO:: Re need to return execution to here.
-    }else{
+    } else {
       emit('move', { from, to, promotionChoice })
       selected.value = null
     }
@@ -121,6 +129,14 @@ const emit = defineEmits(['move'])
 </script>
 
 <style scoped>
+.chess-piece {
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+}
+
 .chessboard {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
