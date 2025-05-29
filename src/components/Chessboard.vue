@@ -47,7 +47,6 @@ const props = defineProps({
   }
 })
 const activeColor = computed(() => props.fen.split(' ')[1]);
-console.log('props.fen', props.fen)
 const selected = ref(null);// selected square coordinates
 
 const pieceImageMap = {
@@ -118,7 +117,6 @@ function handleSquareClick(x, y) {
 
   // handle promotion event
   if (ChessUtil.checkPromotion(y, board.value[from.y][from.x])) {
-    console.log('Promotion needed!');
     showPopup.value = true;
     pendingFrom.value = from;
     pendingTo.value = to;

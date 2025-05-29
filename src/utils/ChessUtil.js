@@ -18,7 +18,6 @@ export default class ChessUtil{
     }
 
     static checkPromotion(rank, pieceChar){
-        console.log('pieceChar: ', pieceChar);
         if((rank === 7 || rank === 0) && pieceChar.toLowerCase() === 'p'){
             return true;
         }
