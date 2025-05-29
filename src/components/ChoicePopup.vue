@@ -3,12 +3,7 @@
     <div class="popup-box">
       <p class="popup-message">{{ message }}</p>
       <div class="popup-choices">
-        <button
-          v-for="(choice, index) in choices"
-          :key="index"
-          class="popup-button"
-          @click="select(choice)"
-        >
+        <button v-for="(choice, index) in choices" :key="index" class="popup-button" @click="selectChoice(choice)">
           {{ choice }}
         </button>
       </div>
@@ -26,7 +21,7 @@ const props = defineProps({
 
 const emit = defineEmits(['select'])
 
-function select(choice) {
+function selectChoice(choice) {
   emit('select', choice)
 }
 </script>
@@ -54,6 +49,7 @@ function select(choice) {
 }
 
 .popup-message {
+  color: black;
   margin-bottom: 1rem;
   font-weight: bold;
 }

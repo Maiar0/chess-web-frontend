@@ -46,6 +46,7 @@ const props = defineProps({
     required: true
   }
 })
+const activeColor = computed(() => props.fen.split(' ')[1]);
 console.log('props.fen', props.fen)
 const selected = ref(null);// selected square coordinates
 
@@ -64,60 +65,70 @@ const pieceImageMap = {
   p: '/chesssprites/bp.png',
 };
 
-
-
-function createBoard(fen) {
-  const board = Array.from({ length: 8 }, () => Array(8).fill(null))
-  const rows = fen.split(' ')[0].split('/')
-  for (let i = 0; i < 8; i++) {
-    let file = 0
-    for (const ch of rows[i]) {
-      if (/\d/.test(ch)) {
-        file += +ch
-      } else {
-        const y = 7 - i   // rank i → y
-        board[y][file++] = ch
-      }
-    }
-  }
-  return board
-}
-
 const board = computed(() => ChessUtil.parseFen(props.fen))
 
 // helper to test if square is selected
 function isSelected(x, y) {
   return selected.value?.x === x && selected.value?.y === y
 }
+
 //handle promotion
 const showPopup = ref(false);
 const promotionChoice = ref('');
 function handlePromotion(choice) {
-  promotionChoice.value = 'Q'
-  showPopup.value = false
-
+  if (choice[0].toLowerCase() === 'k') choice = 'n';
+  if (activeColor.value === 'w') {
+    promotionChoice.value = choice[0].toUpperCase();
+  } else {
+    promotionChoice.value = choice[0].toLowerCase();
+  }
+  showPopup.value = false;
+  if (!pendingFrom.value && !pendingTo.value) return;
+  emit('move', {
+    from: pendingFrom.value,
+    to: pendingTo.value,
+    promotionChoice
+  });
+  selected.value = null;
+  pendingFrom.value = null;
+  pendingTo.value = null;
 }
+
+const pendingFrom = ref(null);
+const pendingTo = ref(null);
 // when user clicks any square
 function handleSquareClick(x, y) {
-  const piece = board.value[y][x]
+  const piece = board.value[y][x];
   if (selected.value === null) {
     // first click: only select if there is a piece
-    if (piece) selected.value = { x, y }
-  } else {
-    // second click: emit move from→to, then clear selection
-    const from = { ...selected.value }
-    const to = { x, y }
-    // emit `move` event to parent
-    if (ChessUtil.checkPromotion(y, board.value[from.y][from.x])) {
-      console.log('Promotion needed!');
-      showPopup.value = true;
-      //TODO:: Re need to return execution to here.
-    } else {
-      emit('move', { from, to, promotionChoice })
-      selected.value = null
+    if (piece && (isUpperCase(piece) === (activeColor.value === 'w'))) {
+      selected.value = { x, y };
     }
+    return;
+  }
+  // second click: emit move from to, then clear selection
+  const from = { ...selected.value }
+  const to = { x, y }
+
+  //click same square
+  if (from.x === to.x && from.y === to.y) {
+    selected.value = null;
+    return;
   }
 
+  // handle promotion event
+  if (ChessUtil.checkPromotion(y, board.value[from.y][from.x])) {
+    console.log('Promotion needed!');
+    showPopup.value = true;
+    pendingFrom.value = from;
+    pendingTo.value = to;
+
+    return;
+  }
+
+  //emit move event
+  emit('move', { from, to, promotionChoice })
+  selected.value = null
 }
 
 function isUpperCase(char) {
