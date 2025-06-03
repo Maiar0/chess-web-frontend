@@ -1,6 +1,6 @@
 export default class ChessApi {
     constructor(baseUrl = '/api/chess/action') {
-        //baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
+        baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
         this.baseUrl = baseUrl + '/api/chess/action';
         this.playerId = localStorage.getItem('chess-player-uuid');
         if (!this.playerId) {

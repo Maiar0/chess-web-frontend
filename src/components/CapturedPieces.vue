@@ -21,7 +21,7 @@ const props = defineProps({
 watch(
   () => props.pieces,
   newVal => {
-    console.log(`[CapturedPieces:${props.side}] pieces changed:`, newVal)
+    //console.log(`[CapturedPieces:${props.side}] pieces changed:`, newVal)
   },
   { immediate: true }   // also fire once immediately
 )

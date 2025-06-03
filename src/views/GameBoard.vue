@@ -51,9 +51,8 @@ const checkMate = ref('');
 //Handles preload call
 onMounted(async () => {
   try {
-    console.log('Game ID:', route.params.gameId);
     const result = await api.getInfo(route.params.gameId);
-    console.log('Game data:', result.data);
+    //console.log('Game data:', result.data);
     updateValues(result);
   } catch (error) {
     console.error('Error fetching game data:', error);

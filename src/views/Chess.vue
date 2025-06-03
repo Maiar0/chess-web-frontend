@@ -37,7 +37,6 @@ const api = new ChessApi('http://localhost:5000')
 async function onNewGame() {
   try {
     const result = await api.newGame();
-    console.log(result);
     gameId.value = result.data.gameId;
     console.log('New game created with ID:', gameId.value);
     router.push(`/game/${gameId.value}`);
@@ -47,8 +46,7 @@ async function onNewGame() {
 }
 async function onNewAiGame() {
   try {
-    const result = await api.newGame();
-    console.log(result);
+    const result = await api.newGame(true);
     gameId.value = result.data.gameId;
     console.log('New game created with ID:', gameId.value);
     router.push(`/game/${gameId.value}`);
