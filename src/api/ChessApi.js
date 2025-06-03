@@ -38,8 +38,8 @@ export default class ChessApi {
         return res.json();
     }
     /** Create a new game */
-    newGame() {
-        return this.request('newGame', '', {});
+    newGame(isAi = false) {
+        return this.request('newGame', '', {isAi: isAi});
     }
      /** Retrieve basic game info (e.g. FEN, captured pieces) */
     getInfo(gameId) {

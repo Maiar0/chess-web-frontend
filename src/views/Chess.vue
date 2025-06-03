@@ -4,9 +4,10 @@
     <p>Choose an option below:</p>
   </div>
   <div class="chess-container">
-    <button @click="onNewGame">New Game</button>
+    <button @click="onNewGame">Play a Friend</button>
     <input v-model="gameId" placeholder="Enter Game ID" />
-    <button @click="onResumeGame">Resume Game</button>
+    <button @click="onResumeGame">Resume Your Game</button>
+    <button @click="onNewAiGame">Play against AI</button>
   </div>
 </template>
 
@@ -34,6 +35,17 @@ const router = useRouter()
 const api = new ChessApi('http://localhost:5000')
 
 async function onNewGame() {
+  try {
+    const result = await api.newGame();
+    console.log(result);
+    gameId.value = result.data.gameId;
+    console.log('New game created with ID:', gameId.value);
+    router.push(`/game/${gameId.value}`);
+  } catch (error) {
+    console.error('Error creating new game:', error);
+  }
+}
+async function onNewAiGame() {
   try {
     const result = await api.newGame();
     console.log(result);
