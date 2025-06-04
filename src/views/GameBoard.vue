@@ -20,9 +20,14 @@ import CapturedPieces from '../components/CapturedPieces.vue';
 import GameStatus from '../components/GameStatus.vue';
 import MessagePopup from '../components/MessagePopup.vue';
 import ChessApi from '../api/ChessApi';
+import socket from '../api/ChessSocket';
 
 const route = useRoute();
 const api = new ChessApi();
+
+const conected = ref(false);
+const socketId = ref('');
+
 
 const fen = ref('');
 const captured = ref('');
@@ -50,6 +55,19 @@ const checkMate = ref('');
 
 //Handles preload call
 onMounted(async () => {
+  socket.on('connect', () => {
+    console.log('🔗 Socket.IO handshake complete. socket.id =', socket.id);
+    connected.value = true;
+    socketId.value = socket.id;
+  });
+
+  // 3) (Optional) Listen for errors if the handshake fails
+  socket.on('connect_error', (err) => {
+    console.error('❌ Socket.IO connection error:', err);
+  });
+
+
+
   try {
     const result = await api.getInfo(route.params.gameId);
     //console.log('Game data:', result.data);
