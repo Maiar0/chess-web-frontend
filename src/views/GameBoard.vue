@@ -69,8 +69,6 @@ async function onMove({ from, to, promotionChoice }) {
     if (result.status === 'ok') {
       // Update the board and captured pieces
       updateValues(result);
-    } else {
-      console.error('Move failed:', result.data.message);
     }
   } catch (error) {
     console.error(`Code: ${error.code}, Message: ${error.message}`);
