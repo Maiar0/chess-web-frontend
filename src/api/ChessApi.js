@@ -1,7 +1,12 @@
 export default class ChessApi {
-    constructor(baseUrl = '/api/chess/action') {
-        //baseUrl = "https://silver-trout-979xxpx7rgxqfppp5-5000.app.github.dev"; //TODO:: go home and change it
-        this.baseUrl = baseUrl + '/api/chess/action';
+    constructor() {
+        
+        console.log('VITE env:', import.meta.env);
+        const envUrl = process.env.VITE_API_URL;
+        const defaultUrl = '/api/chess/action';
+        console.log('Computed baseUrl:', envUrl ? envUrl : defaultUrl);
+        this.baseUrl = envUrl ? envUrl : defaultUrl;
+
         this.playerId = localStorage.getItem('chess-player-uuid');
         if (!this.playerId) {
             this.playerId = crypto.randomUUID();

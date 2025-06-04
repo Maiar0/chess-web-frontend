@@ -230,4 +230,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+*.env.production
+
 # End of https://www.toptal.com/developers/gitignore/api/node,vite,vue,macos,windows,linux,vscode

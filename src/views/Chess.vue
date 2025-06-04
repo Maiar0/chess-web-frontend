@@ -32,7 +32,7 @@ onMounted(() => {
 
 const gameId = ref('')
 const router = useRouter()
-const api = new ChessApi('http://localhost:5000')
+const api = new ChessApi()
 
 async function onNewGame() {
   try {

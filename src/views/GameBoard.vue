@@ -22,7 +22,7 @@ import MessagePopup from '../components/MessagePopup.vue';
 import ChessApi from '../api/ChessApi';
 
 const route = useRoute();
-const api = new ChessApi('http://localhost:5000');
+const api = new ChessApi();
 
 const fen = ref('');
 const captured = ref('');

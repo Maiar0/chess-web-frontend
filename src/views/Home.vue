@@ -25,7 +25,7 @@ const games = ref([
     {
         name: 'Chess',
         description: 'Play a standard game of chess with friends or AI.',
-        image: '/public/chesssprites/wk.png',
+        image: '/chesssprites/wk.png',
         route: '/Chess'
     },
     {
