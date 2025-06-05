@@ -55,11 +55,20 @@ const checkMate = ref('');
 
 //Handles preload call
 onMounted(async () => {
+  console.log('joining room', route.params.gameId)
   socket.emit('registerPlayer', localStorage.getItem('chess-player-uuid'));
   socket.emit('joinGame', route.params.gameId);
 
   socket.on('gameState', (state) => {
     console.log('Game state received:', state);
+    gameId.value = state.gameId;
+    fen.value = state.fen;
+    captured.value = state.capturedPieces;
+    activeColor.value = state.activeColor;
+    inCheck.value = state.inCheck;
+    checkMate.value = state.checkMate;
+    fullMove.value = fen.value.split(' ')[4];
+    halfMove.value = fen.value.split(' ')[5];
   });
 
   try {
