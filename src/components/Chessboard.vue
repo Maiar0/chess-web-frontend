@@ -83,6 +83,7 @@ function handlePromotion(choice) {
   }
   showPopup.value = false;
   if (!pendingFrom.value && !pendingTo.value) return;
+
   emit('move', {
     from: pendingFrom.value,
     to: pendingTo.value,
@@ -108,7 +109,7 @@ function handleSquareClick(x, y) {
   // second click: emit move from to, then clear selection
   const from = { ...selected.value }
   const to = { x, y }
-
+  console.log('from', from, 'to', to);
   //click same square
   if (from.x === to.x && from.y === to.y) {
     selected.value = null;
@@ -123,7 +124,6 @@ function handleSquareClick(x, y) {
 
     return;
   }
-
   //emit move event
   emit('move', { from, to, promotionChoice })
   selected.value = null

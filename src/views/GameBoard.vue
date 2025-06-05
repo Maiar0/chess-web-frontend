@@ -55,18 +55,12 @@ const checkMate = ref('');
 
 //Handles preload call
 onMounted(async () => {
-  socket.on('connect', () => {
-    console.log('🔗 Socket.IO handshake complete. socket.id =', socket.id);
-    connected.value = true;
-    socketId.value = socket.id;
+  socket.emit('registerPlayer', localStorage.getItem('chess-player-uuid'));
+  socket.emit('joinGame', route.params.gameId);
+
+  socket.on('gameState', (state) => {
+    console.log('Game state received:', state);
   });
-
-  // 3) (Optional) Listen for errors if the handshake fails
-  socket.on('connect_error', (err) => {
-    console.error('❌ Socket.IO connection error:', err);
-  });
-
-
 
   try {
     const result = await api.getInfo(route.params.gameId);
@@ -79,7 +73,8 @@ onMounted(async () => {
 
 // Handle moves from the Chessboard component
 async function onMove({ from, to, promotionChoice }) {
-  console.log('Move from:', from, 'to:', to);
+  console.log('from', from, 'to', to);
+
   try {
     console.log('Promotion Char:', promotionChoice);
     const result = await api.movePiece(gameId.value, from, to, promotionChoice.value);
