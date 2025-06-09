@@ -5,7 +5,6 @@
     <p><strong>Move Counter:</strong> {{ fullMove }}</p>
     <p><strong>Half-Move Counter:</strong> {{ halfMove }}</p>
     <p><strong>In Check:</strong> {{ inCheck }}</p>
-    <p><strong>Check Mate:</strong> {{ checkMate }}</p>
     <p><strong>Time Elapsed:</strong> {{ formattedTime }}</p>
   </div>
 </template>
@@ -17,8 +16,7 @@ const props = defineProps({
   activeColor: { type: String, required: true }, // 'w' or 'b'
   fullMove: { type: String, required: true },
   halfMove: { type: String, required: true },
-  inCheck: { type: Boolean, required: true },
-  checkMate: { type: Boolean, required: true },
+  inCheck: { type: Boolean, required: true }
 })
 //TODO:: Timer needs WORK
 const timeElapsed = ref(0);
