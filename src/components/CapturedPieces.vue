@@ -1,7 +1,8 @@
 <template>
-  <div class="captured-pieces">
+  <div class="captured-pieces" :data-side="side">
     <div v-for="(p, i) in pieces" :key="i" class="captured-square">
-      <span>{{ p }}</span>
+      <img v-if="pieceImageMap[p]" :src="pieceImageMap[p]" :alt="p" />
+      <span v-else>{{ p }}</span>
     </div>
   </div>
 </template>
@@ -25,6 +26,20 @@ watch(
   },
   { immediate: true }   // also fire once immediately
 )
+const pieceImageMap = {
+  K: '/chesssprites/wk.png',
+  Q: '/chesssprites/wq.png',
+  R: '/chesssprites/wr.png',
+  B: '/chesssprites/wb.png',
+  N: '/chesssprites/wn.png',
+  P: '/chesssprites/wp.png',
+  k: '/chesssprites/bk.png',
+  q: '/chesssprites/bq.png',
+  r: '/chesssprites/br.png',
+  b: '/chesssprites/bb.png',
+  n: '/chesssprites/bn.png',
+  p: '/chesssprites/bp.png',
+};
 
 </script>
 <style scoped>
@@ -35,7 +50,7 @@ watch(
 
 .captured-pieces {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
   background: var(--board-light);
@@ -44,9 +59,6 @@ watch(
   /* optional: different background per side */
 }
 
-.captured-pieces[data-side="black"] {
-  background: var(--board-dark);
-}
 
 .captured-square {
   width: 2rem;
