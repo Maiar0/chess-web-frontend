@@ -28,6 +28,11 @@ watch(
 
 </script>
 <style scoped>
+.captures {
+  flex: 0 0 auto;
+  max-width: 80px;
+}
+
 .captured-pieces {
   display: flex;
   flex-direction: row;
@@ -54,5 +59,12 @@ watch(
   font-size: 1.25rem;
   user-select: none;
   border-radius: 0.125rem;
+}
+
+@media (max-width: 600px) {
+  .captures {
+    order: 2;
+    /* will flow beneath the board in mobile */
+  }
 }
 </style>

@@ -1,12 +1,9 @@
 <template>
   <div class="board-with-labels">
-    <div class="files files--top">
-      <span v-for="f in files" :key="f">{{ f }}</span>
-    </div>
 
     <div class="ranks-files-row">
       <div class="ranks">
-        <span v-for="r in ranks.slice().reverse()" :key="r">{{ r }}</span>
+        <span v-for="r in ranks" :key="r">{{ r }}</span>
       </div>
       <!--- board --->
       <div class="chessboard">
@@ -18,9 +15,6 @@
             <img v-if="cell" :src="pieceImageMap[cell]" class="chess-piece" :alt="cell" />
           </div>
         </div>
-      </div>
-      <div class="ranks">
-        <span v-for="r in ranks" :key="r">{{ r }}</span>
       </div>
     </div>
 
@@ -39,7 +33,7 @@ import ChessUtil from '../utils/ChessUtil';
 import ChoicePopup from '../components/ChoicePopup.vue';
 
 const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
-const ranks = [1, 2, 3, 4, 5, 6, 7, 8]
+const ranks = [8, 7, 6, 5, 4, 3, 2, 1]
 const props = defineProps({
   fen: {
     type: String,

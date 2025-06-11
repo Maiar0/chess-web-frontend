@@ -1,13 +1,11 @@
 <template>
-  <div class="gameboard">
-    <div class="right-gameboard">
-      <CapturedPieces class="captures captures--white" side="white" :pieces="capturedWhite" />
-      <GameStatus :gameId="gameId" :activeColor="activeColor" :fullMove="fullMove" :halfMove="halfMove"
-        :inCheck="inCheck" />
-      <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
-    </div>
+  <GameStatus :gameId="gameId" :activeColor="activeColor" :fullMove="fullMove" :halfMove="halfMove" :inCheck="inCheck"
+    :buttons="buttons" />
+  <div class="game-container">
     <div class="board-area">
+      <CapturedPieces class="captures captures--white" side="white" :pieces="capturedWhite" />
       <Chessboard class="board" v-if="fen" :fen="fen" @move="onMove" />
+      <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
     </div>
     <MessagePopup :message="errorMessage" :visible="showError" />
     <ChoicePopup v-if="showPopup" :message="message" :choices="['New Game', 'New AI Game']" @select="handleCheckMate" />
@@ -31,7 +29,12 @@ const conected = ref(false);
 const socketId = ref('');
 let message = '';
 
-
+const props = defineProps({
+  gameId: {
+    type: String,
+    required: true
+  }
+});
 const fen = ref('');
 const captured = ref('');
 // Computed: all the white‐captured letters
@@ -55,6 +58,7 @@ const fullMove = ref('');
 const halfMove = ref('');
 const inCheck = ref('');
 const showPopup = ref(false);
+const status = ref('');
 
 const checkMate = computed(() => {
   const boardFen = fen.value.split(' ')[0] || 'kK';
@@ -103,7 +107,6 @@ async function initGame(gameId) {
 
   socket.on('gameState', (state) => {
     console.log('Game state received:', state);
-    //gameId?
     fen.value = state.fen;
     captured.value = state.capturedPieces;
     activeColor.value = state.activeColor;
@@ -146,8 +149,9 @@ function updateValues(result) {
   captured.value = result.data.capturedPieces;
   activeColor.value = result.data.activeColor;
   inCheck.value = result.data.inCheck;
-  fullMove.value = fen.value.split(' ')[4];
-  halfMove.value = fen.value.split(' ')[5];
+  status.value = result.data.status;
+  halfMove.value = fen.value.split(' ')[4];
+  fullMove.value = fen.value.split(' ')[5];
 }
 //handles error messages
 let errorMessage = ref('');
@@ -157,6 +161,19 @@ function showErrorPopup(msg) {
   showError.value = true;
   setTimeout(() => showError.value = false, 3000); // Hide after 3s
 }
+
+const buttons = ref([]);
+function initButtons(status) {
+  buttons.value = [
+    { label: 'Resign', action: () => console.log('ResignClicked') },
+    { label: 'Offer Draw', action: () => console.log('OfferDrawClicked') }];
+  if (parseInt(fen.value.split(' ')[4], 10) >= 50) {
+    buttons.value.push({ label: 'Claim Draw', action: () => console.log('ClaimDrawClicked') });
+  }
+}
+watch(status, (newStatus) => {
+  initButtons(newStatus)
+})
 
 onMounted(() => initGame(gameId.value));
 watch(
@@ -169,41 +186,38 @@ watch(
 
 </script>
 <style scoped>
-.gameboard {
-  position: relative;
-  padding: 2rem;
-  width: 97%;
+.game-container {
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   align-items: flex-start;
-  background: #222;
-}
-
-.game-status {
-  position: center;
-  top: 1rem;
-  right: 1rem;
-}
-
-.right-gameboard {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
 }
 
 .board-area {
-  position: relative;
-  width: 400px;
-  margin: 2rem auto;
-}
-
-.captures {
+  flex: 1 1 320px;
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
 }
 
-.chessboard {
+/* GameStatus spans full width on row-1 */
+.game-status {
+  grid-row: 1;
+  grid-column: 1;
   width: 100%;
+}
+
+/* mobile reflow */
+@media (max-width: 600px) {
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .board-area,
+  .game-status {
+    width: 100%;
+  }
 }
 </style>

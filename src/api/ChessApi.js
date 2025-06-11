@@ -1,7 +1,5 @@
 export default class ChessApi {
     constructor() {
-        
-        console.log('VITE env:', import.meta.env);
         const envUrl = import.meta.env.VITE_API_URL; //const envUrl = process.env.VITE_API_URL;
         const defaultUrl = '/api/chess/action';
         console.log('Computed baseUrl:', envUrl ? envUrl : defaultUrl);

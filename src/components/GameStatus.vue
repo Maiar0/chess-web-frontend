@@ -1,12 +1,20 @@
 <template>
   <div class="game-status">
-    <p><strong>Game ID:</strong> {{ gameId }}</p>
-    <p><strong>Turn:</strong> {{ activeColor === 'w' ? 'White' : 'Black' }}</p>
-    <p><strong>Move Counter:</strong> {{ fullMove }}</p>
-    <p><strong>Half-Move Counter:</strong> {{ halfMove }}</p>
-    <p><strong>In Check:</strong> {{ inCheck }}</p>
-    <p><strong>Time Elapsed:</strong> {{ formattedTime }}</p>
+    <div>
+      <p><strong>Game ID:</strong> {{ gameId }}</p>
+      <p><strong>Turn:</strong> {{ activeColor === 'w' ? 'White' : 'Black' }}</p>
+    </div>
+    <div>
+      <p><strong>Move Counter:</strong> {{ fullMove }}</p>
+      <p><strong>Half-Move Counter:</strong> {{ halfMove }}</p>
+    </div>
+    <div>
+      <p><strong>In Check:</strong> {{ inCheck }}</p>
+    </div>
   </div>
+  <div class="actions"><button v-for="(btn, i) in buttons" :key="i" @click="btn.action()">
+      {{ btn.label }}
+    </button></div>
 </template>
 
 <script setup>
@@ -16,41 +24,44 @@ const props = defineProps({
   activeColor: { type: String, required: true }, // 'w' or 'b'
   fullMove: { type: String, required: true },
   halfMove: { type: String, required: true },
-  inCheck: { type: Boolean, required: true }
+  inCheck: { type: Boolean, required: true },
+  buttons: { type: Array, required: true }
 })
-//TODO:: Timer needs WORK
-const timeElapsed = ref(0);
-let timer = null;
-onMounted(() => {
-  timer = setInterval(() => {
-    timeElapsed.value += 1;
-  }, 1000);
-});
 
-onBeforeUnmount(() => {
-  clearInterval(timer);
-});
-
-const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeElapsed.value / 60)).padStart(2, '0');
-  const seconds = String(timeElapsed.value % 60).padStart(2, '0');
-  return `${minutes}:${seconds}`;
-});
 </script>
 
 <style scoped>
 .game-status {
+  display: flex;
+  justify-content: space-between;
+  /* spread them out */
+  align-items: flex-start;
+  gap: 1rem;
+  /* space between columns */
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #b58863;
   padding: 0.75rem;
-  width: 220px;
-  font-family: Arial, sans-serif;
-  font-size: 0.9rem;
+  /* remove fixed width so it can flex in its parent */
+}
+
+.game-status>div {
+  flex: 1;
+  /* each column takes equal space */
+  min-width: 0;
+  /* allow contents to shrink if needed */
 }
 
 .game-status p {
   margin: 0.25rem 0;
   line-height: 1.4;
+}
+
+/* on small screens, appear below everything */
+@media (max-width: 600px) {
+  .game-status {
+    order: 4;
+    margin-left: 0;
+  }
 }
 </style>
