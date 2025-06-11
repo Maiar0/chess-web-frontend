@@ -168,7 +168,7 @@ const emit = defineEmits(['move'])
 }
 
 .square.dark {
-  background-color: #b58863;
+  background-color: #7C8E76;
 }
 
 .board-with-labels {

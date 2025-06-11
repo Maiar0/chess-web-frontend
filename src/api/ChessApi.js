@@ -1,7 +1,7 @@
 export default class ChessApi {
     constructor() {
         const envUrl = import.meta.env.VITE_API_URL; //const envUrl = process.env.VITE_API_URL;
-        const defaultUrl = '/api/chess/action';
+        const defaultUrl = '/api/chess';
         console.log('Computed baseUrl:', envUrl ? envUrl : defaultUrl);
         this.baseUrl = envUrl ? envUrl : defaultUrl;
 
@@ -24,8 +24,8 @@ export default class ChessApi {
      * It returns a promise that resolves to the response data.
      * If the response is not ok, it throws an error with the status and text.
      */
-    async request (action, gameId, payload = {}) {
-        const res = await fetch(this.baseUrl, {
+    async requestAction (action, gameId, payload = {}) {
+        const res = await fetch(this.baseUrl + '/action', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,11 +42,11 @@ export default class ChessApi {
     }
     /** Create a new game */
     newGame(isAi = false) {
-        return this.request('newGame', '', {isAi: isAi});
+        return this.requestAction('newGame', '', {isAi: isAi});
     }
      /** Retrieve basic game info (e.g. FEN, captured pieces) */
     getInfo(gameId) {
-        return this.request('info', gameId, {});
+        return this.requestAction('info', gameId, {});
     }
     /**
      * Send a move from to.
@@ -55,6 +55,23 @@ export default class ChessApi {
      * @param {{x:number,y:number}} to  
      */
     movePiece(gameId, from, to, promoteTo = ''){
-        return this.request('move', gameId, { from: from, to: to , promoteTo: promoteTo});
+        return this.requestAction('move', gameId, { from: from, to: to , promoteTo: promoteTo});
+    }
+    async chooseColor(gameId, color) {
+        const payload = { color: color };
+        const res = await fetch(this.baseUrl + '/chooseColor', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: 'chooseColor', gameId, payload, playerId: this.playerId })
+        });
+        if (!res.ok) {
+            const { error } = await res.json();
+            const err = new Error(error.message);
+            err.code = error.code;
+            throw err;
+        }
+        return res.json();
     }
 }

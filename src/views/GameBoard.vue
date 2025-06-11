@@ -8,7 +8,7 @@
       <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
     </div>
     <MessagePopup :message="errorMessage" :visible="showError" />
-    <ChoicePopup v-if="showPopup" :message="message" :choices="['New Game', 'New AI Game']" @select="handleCheckMate" />
+    <ChoicePopup v-if="popup.visible" :message="popup.message" :choices="popup.choices" @select="onPopupSelect" />
   </div>
 </template>
 <script setup>
@@ -24,10 +24,6 @@ import ChoicePopup from '../components/ChoicePopup.vue';
 
 const route = useRoute();
 const api = new ChessApi();
-
-const conected = ref(false);
-const socketId = ref('');
-let message = '';
 
 const props = defineProps({
   gameId: {
@@ -57,8 +53,17 @@ const activeColor = ref('')
 const fullMove = ref('');
 const halfMove = ref('');
 const inCheck = ref('');
-const showPopup = ref(false);
 const status = ref('');
+const popup = ref({
+  visible: false,
+  message: '',
+  choices:   /** @type {string[]} */ ([]),
+  handler:   /** @type {(choice:string)=>void} */ (() => { })
+})
+function onPopupSelect(choice) {
+  popup.value.visible = false
+  popup.value.handler(choice)
+}
 
 const checkMate = computed(() => {
   const boardFen = fen.value.split(' ')[0] || 'kK';
@@ -68,15 +73,17 @@ watch(
   checkMate,
   (isCheckMate) => {
     if (isCheckMate) {
+      popup.value.choices = ['New Game', 'New AI Game'];
       const pieces = fen.value.split(' ')[0];
       if (pieces.includes('k')) {
-        message = 'CheckMate: Black wins!';
-      } else if (pieces.contains('K')) {
-        message = 'CheckMate: White wins!';
+        popup.value.message = 'CheckMate: Black wins!';
+      } else if (pieces.includes('K')) {
+        popup.value.message = 'CheckMate: White wins!';
       } else {
-        message = 'Draw!';
+        popup.value.message = 'Draw!';
       }
-      showPopup.value = true;
+      popup.value.handler = handleCheckMate;
+      popup.value.visible = true;
     }
   }
 );
@@ -95,7 +102,18 @@ async function handleCheckMate(choice) {
   } else {
     console.error('Unknown choice:', choice);
   }
-  showPopup.value = false;
+  popup.value.visible = false;
+}
+
+async function handleColorChoice(choice) {
+  try {
+    const result = await api.chooseColor(route.params.gameId, choice.toLowerCase());
+    showErrorPopup(result.data.message || 'Color choice made successfully');
+    console.log('Color choice result:', result.data);
+  } catch (err) {
+    showErrorPopup(err.message);
+  }
+
 }
 
 
@@ -111,14 +129,22 @@ async function initGame(gameId) {
     captured.value = state.capturedPieces;
     activeColor.value = state.activeColor;
     inCheck.value = state.inCheck;
-    fullMove.value = fen.value.split(' ')[4];
-    halfMove.value = fen.value.split(' ')[5];
+    halfMove.value = fen.value.split(' ')[4];
+    fullMove.value = fen.value.split(' ')[5];
   });
 
   try {
     const result = await api.getInfo(route.params.gameId);
     //console.log('Game data:', result.data);
     updateValues(result);
+    popup.value.message = 'Choose your color:';
+    popup.value.choices = ['Black', 'White'];
+    popup.value.handler = handleColorChoice;
+    console.log('Initial FEN:', result.data.fen);
+    const initFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    if (initFen === result.data.fen) {
+      popup.value.visible = true;
+    }
   } catch (error) {
     console.error('Error fetching game data:', error);
   }
