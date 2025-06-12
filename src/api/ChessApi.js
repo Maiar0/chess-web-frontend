@@ -12,25 +12,22 @@ export default class ChessApi {
         }
     }
     
+    /** Create a new game */
     /**
-     * @param {string} action
-     * @param {string} gameId
-     * @param {object} payload
-     * @returns {Promise<any>}
-     * @throws {Error} if the response is not ok
-     * @description
-     * This function sends a request to the chess API.
-     * It takes an action, gameId and payload as parameters.
-     * It returns a promise that resolves to the response data.
-     * If the response is not ok, it throws an error with the status and text.
+     * Starts a new chess game by sending a POST request to the backend.
+     *
+     * @async
+     * @param {boolean} [isAi=false] - Whether to start a game against an AI opponent.
+     * @returns {Promise<Object>} The response data from the backend containing game details.
+     * @throws {Error} If the request fails, throws an error with a message and code from the backend.
      */
-    async requestAction (action, gameId, payload = {}) {
-        const res = await fetch(this.baseUrl + '/action', {
+    async newGame(isAi = false) {
+        const res = await fetch(this.baseUrl + '/newGame', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ action, gameId, payload, playerId: this.playerId })
+            body: JSON.stringify({ payload: { isAi }, playerId: this.playerId })
         });
         if (!res.ok) {
             const { error } = await res.json();
@@ -40,13 +37,30 @@ export default class ChessApi {
         }
         return res.json();
     }
-    /** Create a new game */
-    newGame(isAi = false) {
-        return this.requestAction('newGame', '', {isAi: isAi});
-    }
-     /** Retrieve basic game info (e.g. FEN, captured pieces) */
-    getInfo(gameId) {
-        return this.requestAction('info', gameId, {});
+    
+    /**
+     * Retrieves information about a chess game from the server.
+     *
+     * @async
+     * @param {string} gameId - The unique identifier of the chess game.
+     * @returns {Promise<Object>} A promise that resolves to the game information object.
+     * @throws {Error} Throws an error if the server response is not OK, including an error message and code.
+     */
+    async getInfo(gameId) {
+        const res = await fetch(this.baseUrl + '/getInfo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gameId, playerId: this.playerId })
+        });
+        if (!res.ok) {
+            const { error } = await res.json();
+            const err = new Error(error.message);
+            err.code = error.code;
+            throw err;
+        }
+        return res.json();
     }
     /**
      * Send a move from to.
@@ -54,9 +68,32 @@ export default class ChessApi {
      * @param {{x:number,y:number}} from  
      * @param {{x:number,y:number}} to  
      */
-    movePiece(gameId, from, to, promoteTo = ''){
-        return this.requestAction('move', gameId, { from: from, to: to , promoteTo: promoteTo});
+    async movePiece(gameId, from, to, promoteTo = ''){
+        const res = await fetch(this.baseUrl + '/move', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gameId, payload: { from: from, to: to , promoteTo: promoteTo }, playerId: this.playerId })
+        });
+        if (!res.ok) {
+            const { error } = await res.json();
+            const err = new Error(error.message);
+            err.code = error.code;
+            throw err;
+        }
+        return res.json();
+        //return this.requestAction('move', gameId, { from: from, to: to , promoteTo: promoteTo});
     }
+    /**
+     * Sends a request to choose a color for the specified game.
+     *
+     * @async
+     * @param {string} gameId - The unique identifier of the game.
+     * @param {string} color - The color to choose (e.g., "white" or "black").
+     * @returns {Promise<Object>} The response data from the server.
+     * @throws {Error} If the server responds with an error.
+     */
     async chooseColor(gameId, color) {
         const payload = { color: color };
         const res = await fetch(this.baseUrl + '/chooseColor', {
