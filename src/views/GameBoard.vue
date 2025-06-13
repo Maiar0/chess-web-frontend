@@ -132,6 +132,14 @@ async function initGame(gameId) {
     halfMove.value = fen.value.split(' ')[4];
     fullMove.value = fen.value.split(' ')[5];
   });
+  //if someone requests a draw, show a popup
+  socket.on('drawOffered', (data) => {
+    console.log('Draw offer received:', data);
+    popup.value.message = `${data.by} has offered a draw. Do you accept?`;
+    popup.value.choices = ['Accept', 'Decline'];
+    popup.value.handler = respondDraw;
+    popup.value.visible = true;
+  });
 
   try {
     const result = await api.getInfo(route.params.gameId);
@@ -148,6 +156,17 @@ async function initGame(gameId) {
   } catch (error) {
     console.error('Error fetching game data:', error);
   }
+}
+
+async function respondDraw(choice) {
+  try {
+    const result = await api.respondDraw(gameId.value, choice);
+    console.log('Draw response:', result.data);
+  } catch (error) {
+    console.error('Error responding to draw:', error);
+    showErrorPopup(error.message);
+  }
+  popup.value.visible = false;
 }
 
 // Handle moves from the Chessboard component
@@ -192,7 +211,7 @@ const buttons = ref([]);
 function initButtons(status) {
   buttons.value = [
     { label: 'Resign', action: () => console.log('ResignClicked') },
-    { label: 'Offer Draw', action: () => console.log('OfferDrawClicked') }];
+    { label: 'Offer Draw', action: () => socket.emit('offerDraw', { gameId: gameId.value, playerId: localStorage.getItem('chess-player-uuid') }) }];
   if (parseInt(fen.value.split(' ')[4], 10) >= 50) {
     buttons.value.push({ label: 'Claim Draw', action: () => console.log('ClaimDrawClicked') });
   }
