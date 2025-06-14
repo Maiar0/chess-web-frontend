@@ -12,7 +12,7 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Chessboard from '../components/Chessboard.vue';
 import CapturedPieces from '../components/CapturedPieces.vue';
@@ -54,15 +54,15 @@ const fullMove = ref('');
 const halfMove = ref('');
 const inCheck = ref('');
 const status = ref('');
-const popup = ref({
+const popup = reactive({
   visible: false,
   message: '',
-  choices:   /** @type {string[]} */ ([]),
-  handler:   /** @type {(choice:string)=>void} */ (() => { })
-})
+  choices: /** @type {string[]} */ ([]),
+  handler: /** @type {(choice:string)=>void} */ (() => { })
+});
 function onPopupSelect(choice) {
-  popup.value.visible = false
-  popup.value.handler(choice)
+  popup.visible = false
+  popup.handler(choice)
 }
 
 const checkMate = computed(() => {
@@ -73,24 +73,24 @@ watch(
   checkMate,
   (isCheckMate) => {
     if (isCheckMate) {
-      popup.value.choices = ['New Game', 'New AI Game'];
+      popup.choices = ['New Game', 'New AI Game'];
       const pieces = fen.value.split(' ')[0];
       if (pieces.includes('k')) {
-        popup.value.message = 'CheckMate: Black wins!';
+        popup.message = 'CheckMate: Black wins!';
       } else if (pieces.includes('K')) {
-        popup.value.message = 'CheckMate: White wins!';
+        popup.message = 'CheckMate: White wins!';
       } else {
-        popup.value.message = 'Draw!';
+        popup.message = 'Draw!';
       }
-      popup.value.handler = handleCheckMate;
-      popup.value.visible = true;
+      popup.handler = handleGameOver;
+      popup.visible = true;
     }
   }
 );
 
 const router = useRouter()
-async function handleCheckMate(choice) {
-  console.log('Checkmate choice:', choice);
+async function handleGameOver(choice) {
+  console.log('End Game choice:', choice);
   if (choice === 'New Game') {
     console.log('NewGame clicked');
     const result = await api.newGame();
@@ -102,7 +102,7 @@ async function handleCheckMate(choice) {
   } else {
     console.error('Unknown choice:', choice);
   }
-  popup.value.visible = false;
+  popup.visible = false;
 }
 
 async function handleColorChoice(choice) {
@@ -135,23 +135,38 @@ async function initGame(gameId) {
   //if someone requests a draw, show a popup
   socket.on('drawOffered', (data) => {
     console.log('Draw offer received:', data);
-    popup.value.message = `${data.by} has offered a draw. Do you accept?`;
-    popup.value.choices = ['Accept', 'Decline'];
-    popup.value.handler = respondDraw;
-    popup.value.visible = true;
+    popup.message = `${data.by} has offered a draw. Do you accept?`;
+    popup.choices = ['Accept', 'Decline'];
+    popup.handler = respondDraw;
+    popup.visible = true;
+  });
+
+  socket.on('drawResult', (data) => {
+    console.log('Draw result:', data);
+    console.log('popupvalue', popup);
+    if (data.white && data.black) {
+      popup.visible = true,
+        popup.message = 'Draw Accepted',
+        popup.choices = ['New Game', 'New AI Game'],
+        popup.handler = handleGameOver
+    } else {
+      popup.visible = false;
+      const color = data.white ? 'White' : 'Black';
+      showErrorPopup(`Draw Declined by ${color}`);
+    }
   });
 
   try {
     const result = await api.getInfo(route.params.gameId);
     //console.log('Game data:', result.data);
     updateValues(result);
-    popup.value.message = 'Choose your color:';
-    popup.value.choices = ['Black', 'White'];
-    popup.value.handler = handleColorChoice;
+    popup.message = 'Choose your color:';
+    popup.choices = ['Black', 'White'];
+    popup.handler = handleColorChoice;
     console.log('Initial FEN:', result.data.fen);
     const initFen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
     if (initFen === result.data.fen) {
-      popup.value.visible = true;
+      popup.visible = true;
     }
   } catch (error) {
     console.error('Error fetching game data:', error);
@@ -166,7 +181,6 @@ async function respondDraw(choice) {
     console.error('Error responding to draw:', error);
     showErrorPopup(error.message);
   }
-  popup.value.visible = false;
 }
 
 // Handle moves from the Chessboard component
