@@ -156,6 +156,14 @@ async function initGame(gameId) {
     }
   });
 
+  socket.on('resignation', (data) => {
+    console.log('Resignation received:', data);
+    popup.visible = true;
+    popup.message = `${data.by} has resigned.`;
+    popup.choices = ['New Game', 'New AI Game'];
+    popup.handler = handleGameOver;
+  });
+
   try {
     const result = await api.getInfo(route.params.gameId);
     //console.log('Game data:', result.data);
@@ -224,10 +232,23 @@ function showErrorPopup(msg) {
 const buttons = ref([]);
 function initButtons(status) {
   buttons.value = [
-    { label: 'Resign', action: () => console.log('ResignClicked') },
+    { label: 'Resign', action: resign },
     { label: 'Offer Draw', action: () => socket.emit('offerDraw', { gameId: gameId.value, playerId: localStorage.getItem('chess-player-uuid') }) }];
   if (parseInt(fen.value.split(' ')[4], 10) >= 50) {
     buttons.value.push({ label: 'Claim Draw', action: () => console.log('ClaimDrawClicked') });
+  }
+}
+async function resign() {
+  try {
+    const result = await api.resign(gameId.value);
+    console.log('Resignation result:', result.data);
+    popup.visible = true;
+    popup.message = `${result.data.by} has resigned.`;
+    popup.choices = ['New Game', 'New AI Game'];
+    popup.handler = handleGameOver;
+  } catch (error) {
+    console.error('Error resigning:', error);
+    showErrorPopup(error.message);
   }
 }
 watch(status, (newStatus) => {
