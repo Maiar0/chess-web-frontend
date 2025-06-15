@@ -151,7 +151,7 @@ async function initGame(gameId) {
         popup.handler = handleGameOver
     } else {
       popup.visible = false;
-      const color = data.white ? 'White' : 'Black';
+      const color = data.by;
       showErrorPopup(`Draw Declined by ${color}`);
     }
   });
