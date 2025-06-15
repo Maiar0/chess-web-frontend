@@ -1,6 +1,10 @@
 <template>
   <nav class="navbar">
-    <h1 class="navbar_title">Play Chess</h1>
+    <h1 class="navbar_title">
+      <img src="/medeving-white.svg" alt="Medeving Logo" width="48" height="48"
+        style="vertical-align: middle; margin-right: -0.5em;" />
+      DwardDevs.com
+    </h1>
     <div class="navbar_buttons">
       <button @click="goHome">Home</button>
       <button @click="goAbout">About</button>
