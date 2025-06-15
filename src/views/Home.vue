@@ -27,24 +27,6 @@ const games = ref([
         description: 'Play a standard game of chess with friends or AI.',
         image: '/chesssprites/wk.png',
         route: '/Chess'
-    },
-    {
-        name: 'Game Beta',
-        description: 'Challenge a rival in a rapid showdown.',
-        image: '/assets/game-beta.jpg',
-        route: '/game/beta456'
-    },
-    {
-        name: 'Game Gamma',
-        description: 'Blitz game with a ticking clock.',
-        image: '/assets/game-gamma.jpg',
-        route: '/game/gamma789'
-    },
-    {
-        name: 'Game Delta',
-        description: 'Weekly tournament for advanced players.',
-        image: '/assets/game-delta.jpg',
-        route: '/game/delta012'
     }
 ])
 </script>
