@@ -159,4 +159,20 @@ export default class ChessApi {
         }
         return res.json();
     }
+    async claimDraw(gameId) {
+        const res = await fetch(this.baseUrl + '/claimDraw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ gameId, playerId: this.playerId, payload: { claimDraw: true } })
+        });
+        if (!res.ok) {
+            const { error } = await res.json();
+            const err = new Error(error.message);
+            err.code = error.code;
+            throw err;
+        }
+        return res.json();
+    }
 }
