@@ -1,13 +1,15 @@
 <template>
-  <div class="chess">
-    <h1>Welcome to the Game</h1>
-    <p>Choose an option below:</p>
-  </div>
-  <div class="chess-container">
-    <button @click="onNewGame">Play a Friend</button>
-    <input v-model="gameId" placeholder="Enter Game ID" />
-    <button @click="onResumeGame">Resume Your Game</button>
-    <button @click="onNewAiGame">Play against AI</button>
+  <div class="landing-view">
+    <div class="chess">
+      <h1>Play Chess</h1>
+      <p>Choose an option below:</p>
+    </div>
+    <div class="chess-container">
+      <button @click="onNewGame">Play a Friend</button>
+      <input v-model="gameId" placeholder="Enter Game ID" />
+      <button @click="onResumeGame">Resume Your Game</button>
+      <button @click="onNewAiGame">Play against AI</button>
+    </div>
   </div>
 </template>
 
@@ -16,6 +18,7 @@ import { ref, onMounted } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'vue-router'
 import ChessApi from '../api/ChessApi'
+import chessBg from '../../public/chesssprites/chessboard.png'
 
 onMounted(() => {
   const playerKey = 'chess-player-uuid'
@@ -56,6 +59,10 @@ async function onNewAiGame() {
 }
 
 function onResumeGame() {
+  if (!gameId.value) {
+    alert('Please enter a Game ID to resume.');
+    return;
+  }
   if (gameId.value.trim()) {
     router.push(`/game/${gameId.value.trim()}`);
   }
