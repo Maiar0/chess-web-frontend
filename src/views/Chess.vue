@@ -18,7 +18,6 @@ import { ref, onMounted } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'vue-router'
 import ChessApi from '../api/ChessApi'
-import chessBg from '../../public/chesssprites/chessboard.png'
 
 onMounted(() => {
   const playerKey = 'chess-player-uuid'
