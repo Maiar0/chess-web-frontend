@@ -34,6 +34,7 @@ const goAbout = () => {
   height: 8vh;
   width: 100%;
   left: 0;
+  z-index: 1000;
 }
 
 .navbar_buttons {

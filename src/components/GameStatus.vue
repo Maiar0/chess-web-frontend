@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { defineProps } from 'vue'
 const props = defineProps({
   gameId: { type: String, required: true },
   activeColor: { type: String, required: true }, // 'w' or 'b'
@@ -33,7 +33,7 @@ const props = defineProps({
 <style scoped>
 .game-status {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   /* spread them out */
   align-items: flex-start;
   gap: 1rem;
@@ -49,6 +49,7 @@ const props = defineProps({
   flex: 1;
   /* each column takes equal space */
   min-width: 0;
+  max-width: fit-content;
   /* allow contents to shrink if needed */
 }
 
