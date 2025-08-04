@@ -4,10 +4,14 @@
     <div class="chess-container">
       <h1>Play Chess</h1>
       <h1>Choose an option below:</h1>
-      <button @click="onNewGame">Play a Friend</button>
-      <input v-model="gameId" placeholder="Enter Game ID" />
-      <button @click="onResumeGame">Resume Your Game</button>
-      <button @click="onNewAiGame">Play against AI</button>
+      <div class="new-game-section">
+        <button @click="onNewGame">Play a Friend</button>
+        <button @click="onNewAiGame">Play against AI</button>
+      </div>
+      <div class="resume-section">
+        <input v-model="gameId" placeholder="Enter Game ID" />
+        <button @click="onResumeGame">Resume Your Game</button>
+      </div>
     </div>
   </div>
 </template>
@@ -131,7 +135,7 @@ function onResumeGame() {
 /* Buttons */
 .chess-container button {
   width: 100%;
-  max-width: 300px;
+  height: 50px;
   padding: var(--spacing-lg) var(--spacing-xl);
   font-size: 1.1rem;
   font-weight: 600;
@@ -170,10 +174,42 @@ function onResumeGame() {
   transform: translateY(0);
 }
 
+/* New Game Section */
+.new-game-section {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: var(--spacing-xl);
+}
+
+.new-game-section button {
+  flex: 1;
+  max-width: none;
+}
+
+/* Resume Section */
+.resume-section {
+  display: flex;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 600px;
+}
+
+.resume-section input {
+  flex: 1;
+  max-width: none;
+}
+
+.resume-section button {
+  flex: 1;
+  max-width: none;
+}
+
 /* Input Field */
 .chess-container input {
   width: 100%;
-  max-width: 300px;
+  height: 50px;
   padding: var(--spacing-lg);
   font-size: 1rem;
   border: 2px solid var(--border-color);
@@ -213,11 +249,17 @@ function onResumeGame() {
   .chess-container h1:last-of-type {
     font-size: 1.25rem;
   }
+
+  .new-game-section,
+  .resume-section {
+    flex-direction: column;
+    max-width: 300px;
+  }
 }
 
-@media (max -width: 480px) {
+@media (max-width: 480px) {
   .chess-container {
-    padding: v ar(--spacing-lg);
+    padding: var(--spacing-lg);
   }
 
   .chess-container h1 {
