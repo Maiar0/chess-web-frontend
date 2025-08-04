@@ -22,7 +22,7 @@ const props = defineProps({
 watch(
   () => props.pieces,
   newVal => {
-    //console.log(`[CapturedPieces:${props.side}] pieces changed:`, newVal)
+    console.log(`[CapturedPieces:${props.side}] pieces changed:`, newVal)
   },
   { immediate: true }   // also fire once immediately
 )
@@ -43,22 +43,18 @@ const pieceImageMap = {
 
 </script>
 <style scoped>
-.captures {
-  flex: 0 0 auto;
-  max-width: 80px;
-}
-
 .captured-pieces {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.5rem;
-  background: var(--board-light);
-  border: 1px solid #666;
-  border-radius: 0.25rem;
-  /* optional: different background per side */
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(17, 153, 142, 0.3);
+  border-radius: 0.5rem;
+  min-width: 120px;
+  max-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
-
 
 .captured-square {
   width: 2rem;
@@ -66,17 +62,59 @@ const pieceImageMap = {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #b58863;
-  border: 1px solid #999;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
   font-size: 1.25rem;
   user-select: none;
-  border-radius: 0.125rem;
+  border-radius: 0.25rem;
+  position: relative;
+}
+
+.captured-square img {
+  width: 75%;
+  height: 75%;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.captured-square span {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Side-specific styling */
+.captured-pieces[data-side="white"] {
+  border-left: 4px solid #11998e;
+}
+
+.captured-pieces[data-side="black"] {
+  border-left: 4px solid #0d7a6b;
+}
+
+@media (max-width: 768px) {
+  .captured-pieces {
+    min-width: 100px;
+    max-width: 120px;
+    padding: 0.25rem;
+  }
+
+  .captured-square {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
 }
 
 @media (max-width: 600px) {
-  .captures {
+  .captured-pieces {
     order: 2;
-    /* will flow beneath the board in mobile */
+    min-width: 80px;
+    max-width: 100px;
+  }
+
+  .captured-square {
+    width: 1.6rem;
+    height: 1.6rem;
   }
 }
 </style>

@@ -36,7 +36,6 @@ const games = ref([
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
-    color: #ffffff;
 }
 
 .home-container h1 {
@@ -52,7 +51,6 @@ const games = ref([
 }
 
 .game-card {
-    background-color: #1e1e1e;
     border-radius: 8px;
     overflow: hidden;
     display: flex;
@@ -64,14 +62,12 @@ const games = ref([
 
 .game-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .game-image {
     width: 100%;
     height: 140px;
     object-fit: cover;
-    background-color: #333333;
 }
 
 .game-info {
@@ -84,13 +80,11 @@ const games = ref([
 .game-name {
     font-size: 1.25rem;
     margin: 0 0 0.5rem;
-    color: #fff;
 }
 
 .game-description {
     font-size: 0.9rem;
     line-height: 1.4;
     flex: 1;
-    color: #ccc;
 }
 </style>

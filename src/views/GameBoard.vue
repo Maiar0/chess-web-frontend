@@ -1,14 +1,17 @@
 <template>
-  <GameStatus :gameId="gameId" :activeColor="activeColor" :fullMove="fullMove" :halfMove="halfMove" :inCheck="inCheck"
-    :buttons="buttons" />
-  <div class="game-container">
-    <div class="board-area">
-      <CapturedPieces class="captures captures--white" side="white" :pieces="capturedWhite" />
-      <Chessboard class="board" v-if="fen" :fen="fen" @move="onMove" />
-      <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
+  <div class="bg-layer"></div>
+  <div class="content">
+    <GameStatus :gameId="gameId" :activeColor="activeColor" :fullMove="fullMove" :halfMove="halfMove" :inCheck="inCheck"
+      :buttons="buttons" />
+    <div class="game-container">
+      <div class="board-area">
+        <CapturedPieces class="captures captures--white" side="white" :pieces="capturedWhite" />
+        <Chessboard class="board" v-if="fen" :fen="fen" @move="onMove" />
+        <CapturedPieces class="captures captures--black" side="black" :pieces="capturedBlack" />
+      </div>
+      <MessagePopup :message="errorMessage" :visible="showError" />
+      <ChoicePopup v-if="popup.visible" :message="popup.message" :choices="popup.choices" @select="onPopupSelect" />
     </div>
-    <MessagePopup :message="errorMessage" :visible="showError" />
-    <ChoicePopup v-if="popup.visible" :message="popup.message" :choices="popup.choices" @select="onPopupSelect" />
   </div>
 </template>
 <script setup>
@@ -48,6 +51,15 @@ const capturedBlack = computed(() => {
     .split('')
     .filter(c => /[a-z]/.test(c))
 })
+
+// Watch captured pieces arrays to see how they populate
+watch(capturedWhite, (newVal) => {
+  console.log('🟦 capturedWhite changed:', newVal)
+}, { immediate: true })
+
+watch(capturedBlack, (newVal) => {
+  console.log('⬛ capturedBlack changed:', newVal)
+}, { immediate: true })
 const gameId = ref('');
 const activeColor = ref('')
 const fullMove = ref('');
@@ -221,7 +233,7 @@ async function onMove({ from, to, promotionChoice }) {
 function updateValues(result) {
   gameId.value = result.data.gameId;
   fen.value = result.data.fen;
-  captured.value = result.data.capturedPieces;
+  captured.value = result.data.capturedString;
   activeColor.value = result.data.activeColor;
   inCheck.value = result.data.inCheck;
   status.value = result.data.status;
@@ -284,29 +296,120 @@ watch(
 
 </script>
 <style scoped>
+/* Background Layer */
+.bg-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  z-index: -1;
+}
+
+/* Main Content Container */
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: calc(100vh - 8vh);
+  padding: var(--spacing-lg);
+  color: var(--text-primary);
+}
+
 .game-container {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
-  gap: 1rem;
-  padding: 1rem;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  max-width: 1200px;
+  width: 100%;
 }
 
 .board-area {
   flex: 1 1 320px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
 }
 
-/* GameStatus spans full width on row-1 */
+/* Captured pieces styling */
+.captures {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-width: 120px;
+  text-align: center;
+}
+
+.captures--white {
+  border-left: 4px solid #11998e;
+}
+
+.captures--black {
+  border-left: 4px solid #0d7a6b;
+}
+
+/* Chessboard styling */
+.board {
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* GameStatus styling */
 .game-status {
-  grid-row: 1;
-  grid-column: 1;
   width: 100%;
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Animation for page load */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-container {
+  animation: fadeInUp 0.6s ease-out;
 }
 
 /* mobile reflow */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--spacing-md);
+  }
+
+  .game-container {
+    padding: var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .board-area {
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .captures {
+    min-width: 100px;
+    padding: var(--spacing-xs);
+  }
+}
+
 @media (max-width: 600px) {
   .game-container {
     flex-direction: column;
@@ -316,6 +419,11 @@ watch(
   .board-area,
   .game-status {
     width: 100%;
+  }
+
+  .board {
+    max-width: 100%;
+    height: auto;
   }
 }
 </style>

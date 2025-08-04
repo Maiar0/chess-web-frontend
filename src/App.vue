@@ -18,5 +18,9 @@ import Footer from './components/Footer.vue'
   margin-left: calc(-50vw + 50%);
   /* center the bleed */
   padding: 0;
+  padding-top: 8vh;
+  /* Add top padding to account for fixed navbar */
+  min-height: calc(100vh - 8vh);
+  /* Ensure content takes remaining viewport height */
 }
 </style>

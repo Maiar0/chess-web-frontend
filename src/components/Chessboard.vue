@@ -146,7 +146,9 @@ const emit = defineEmits(['move'])
   width: 400px;
   height: 400px;
   transform: rotate(-90deg);
-  border: 2px solid #333;
+  border: 3px solid #11998e;
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 25px rgba(17, 153, 142, 0.2);
 }
 
 .square {
@@ -156,25 +158,36 @@ const emit = defineEmits(['move'])
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #999;
+  border: 1px solid rgba(17, 153, 142, 0.3);
   font-size: 2.0rem;
   user-select: none;
-  background-color: #f0d9b5;
+  background-color: #e8f5e8;
+  transition: all 0.2s ease;
+}
+
+.square:hover {
+  background-color: rgba(4, 7, 1, 0.1);
+}
+
+.square.dark:hover {
+  background-color: #208145;
 }
 
 .square.selected {
-  outline: 3px solid yellow;
+  outline: 3px solid #11998e;
   outline-offset: -2px;
+  background-color: rgba(17, 153, 142, 0.2);
 }
 
 .square.dark {
-  background-color: #7C8E76;
+  background-color: #38ef7d;
 }
 
 .board-with-labels {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #e8f5e8;
 }
 
 .files {
@@ -183,6 +196,8 @@ const emit = defineEmits(['move'])
   width: 100%;
   text-align: center;
   font-weight: bold;
+  color: #11998e;
+  font-size: 1.1rem;
 }
 
 .files--top {
@@ -203,5 +218,7 @@ const emit = defineEmits(['move'])
   justify-content: space-between;
   margin: 0 0.5rem;
   font-weight: bold;
+  color: #11998e;
+  font-size: 1.1rem;
 }
 </style>
