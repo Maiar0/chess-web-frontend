@@ -30,6 +30,12 @@ const games = ref([
         description: 'Play a standard game of chess with friends or AI.',
         image: '/chesssprites/wk.svg',
         route: '/Chess'
+    },
+    {
+        name: 'Tic Tac Toe',
+        description: 'Play Tic Tac Toe.',
+        image: '/tictactoe/tic_tac_toe.svg',
+        route: '/tictactoe'
     }
 ])
 </script>

@@ -65,6 +65,7 @@ const goAbout = () => {
 
 .navbar_title {
   font-size: 1.8em;
+  color: white;
   text-align: left;
   padding-left: 1rem;
   margin: 0;
