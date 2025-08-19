@@ -17,13 +17,13 @@
 <script setup>
 import { ref, onMounted, computed, watch, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import Chessboard from '../components/Chessboard.vue';
-import CapturedPieces from '../components/CapturedPieces.vue';
-import GameStatus from '../components/GameStatus.vue';
-import MessagePopup from '../components/MessagePopup.vue';
+import Chessboard from '../components/chess/Chessboard.vue';
+import CapturedPieces from '../components/chess/CapturedPieces.vue';
+import GameStatus from '../components/chess/GameStatus.vue';
+import MessagePopup from '../components/utils/MessagePopup.vue';
 import ChessApi from '../api/ChessApi';
 import socket from '../api/ChessSocket';
-import ChoicePopup from '../components/ChoicePopup.vue';
+import ChoicePopup from '../components/utils/ChoicePopup.vue';
 
 const route = useRoute();
 const api = new ChessApi();
