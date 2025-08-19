@@ -1,15 +1,15 @@
+import Api from './Api';
+//TODO: Remove this class and use Api class directly
 export default class ChessApi {
     constructor() {
-        const envUrl = import.meta.env.VITE_API_URL; //const envUrl = process.env.VITE_API_URL;
         const defaultUrl = '/api/chess';
-        console.log('Computed baseUrl:', envUrl ? envUrl : defaultUrl);
-        this.baseUrl = envUrl ? envUrl : defaultUrl;
-
+        this.api = new Api(defaultUrl);
         this.playerId = localStorage.getItem('chess-player-uuid');
         if (!this.playerId) {
             this.playerId = crypto.randomUUID();
             localStorage.setItem('chess-player-uuid', this.playerId);
         }
+        
     }
     
     /** Create a new game */
@@ -22,20 +22,12 @@ export default class ChessApi {
      * @throws {Error} If the request fails, throws an error with a message and code from the backend.
      */
     async newGame(isAi = false) {
-        const res = await fetch(this.baseUrl + '/newGame', {
+        const payload = { isAi };
+        const res = await this.api.fetchJSON('/newGame', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ payload: { isAi }, playerId: this.playerId })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ payload })
+        })
+        return res
     }
     
     /**
@@ -47,20 +39,11 @@ export default class ChessApi {
      * @throws {Error} Throws an error if the server response is not OK, including an error message and code.
      */
     async getInfo(gameId) {
-        const res = await fetch(this.baseUrl + '/getInfo', {
+        const res = await this.api.fetchJSON('/getInfo', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ gameId, playerId: this.playerId })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+        })
+        return res
     }
     /**
      * Send a move from to.
@@ -69,21 +52,12 @@ export default class ChessApi {
      * @param {{x:number,y:number}} to  
      */
     async movePiece(gameId, from, to, promoteTo = ''){
-        const res = await fetch(this.baseUrl + '/move', {
+        const payload = { from: from, to: to , promoteTo: promoteTo }
+        const res = await this.api.fetchJSON('/move', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gameId, payload: { from: from, to: to , promoteTo: promoteTo }, playerId: this.playerId })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
-        //return this.requestAction('move', gameId, { from: from, to: to , promoteTo: promoteTo});
+            body: JSON.stringify({ gameId, payload, playerId: this.playerId })
+        })
+        return res
     }
     /**
      * Sends a request to choose a color for the specified game.
@@ -96,83 +70,42 @@ export default class ChessApi {
      */
     async chooseColor(gameId, color) {
         const payload = { color: color };
-        const res = await fetch(this.baseUrl + '/chooseColor', {
+        const res = await this.api.fetchJSON('/chooseColor', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: 'chooseColor', gameId, payload, playerId: this.playerId })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ gameId, payload, playerId: this.playerId })
+        })
+        return res
     }
     async requestEndGame(gameId, type) {
-        const res = await fetch(this.baseUrl + '/requestEndGame', {
+        const res = await this.api.fetchJSON('/requestEndGame', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gameId, playerId: this.playerId , payload: { type: type } })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ gameId, payload: { type: type }, playerId: this.playerId })
+        })
+        return res
+        
     }
     async respondDraw(gameId, accept) {
-        const res = await fetch(this.baseUrl + '/drawResponse', {
+        const payload = { accept: accept }
+        const res = await this.api.fetchJSON('/drawResponse', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gameId, playerId: this.playerId , payload: { accept: accept } })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ gameId, payload, playerId: this.playerId })
+        })
+        return res
     }
     async resign(gameId) {
-        const res = await fetch(this.baseUrl + '/resign', {
+        const payload = { resign: true }
+        const res = await this.api.fetchJSON('/resign', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gameId, playerId: this.playerId, payload: { resign: true } })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ gameId, payload, playerId: this.playerId })
+        })
+        return res
     }
     async claimDraw(gameId) {
-        const res = await fetch(this.baseUrl + '/claimDraw', {
+        const payload = { claimDraw: true }
+        const res = await this.api.fetchJSON('/claimDraw', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ gameId, playerId: this.playerId, payload: { claimDraw: true } })
-        });
-        if (!res.ok) {
-            const { error } = await res.json();
-            const err = new Error(error.message);
-            err.code = error.code;
-            throw err;
-        }
-        return res.json();
+            body: JSON.stringify({ gameId, payload, playerId: this.playerId })
+        })
+        return res
     }
 }
