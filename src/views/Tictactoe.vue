@@ -46,7 +46,7 @@ async function onNewGame(isAi = false) {
             method: 'POST',
             body: JSON.stringify({
                 playerId: playerId,
-                isAi: isAi//put this on backend call
+                isAi: false//put this on backend call
             })
         })
         console.log('result', result)

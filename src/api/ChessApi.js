@@ -23,7 +23,7 @@ export default class ChessApi {
      */
     async newGame(isAi = false) {
         const payload = { isAi };
-        const res = await this.api.fetchJSON('/newGame', {
+        const res = await this.api.fetchJSON('/api/chess/newGame', {
             method: 'POST',
             body: JSON.stringify({ payload })
         })
@@ -39,7 +39,7 @@ export default class ChessApi {
      * @throws {Error} Throws an error if the server response is not OK, including an error message and code.
      */
     async getInfo(gameId) {
-        const res = await this.api.fetchJSON('/getInfo', {
+        const res = await this.api.fetchJSON('/api/chess/getInfo', {
             method: 'POST',
             body: JSON.stringify({ gameId, playerId: this.playerId })
         })
@@ -53,7 +53,7 @@ export default class ChessApi {
      */
     async movePiece(gameId, from, to, promoteTo = ''){
         const payload = { from: from, to: to , promoteTo: promoteTo }
-        const res = await this.api.fetchJSON('/move', {
+        const res = await this.api.fetchJSON('/api/chess/move', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload, playerId: this.playerId })
         })
@@ -70,14 +70,14 @@ export default class ChessApi {
      */
     async chooseColor(gameId, color) {
         const payload = { color: color };
-        const res = await this.api.fetchJSON('/chooseColor', {
+        const res = await this.api.fetchJSON('/api/chess/chooseColor', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload, playerId: this.playerId })
         })
         return res
     }
     async requestEndGame(gameId, type) {
-        const res = await this.api.fetchJSON('/requestEndGame', {
+        const res = await this.api.fetchJSON('/api/chess/requestEndGame', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload: { type: type }, playerId: this.playerId })
         })
@@ -86,7 +86,7 @@ export default class ChessApi {
     }
     async respondDraw(gameId, accept) {
         const payload = { accept: accept }
-        const res = await this.api.fetchJSON('/drawResponse', {
+        const res = await this.api.fetchJSON('/api/chess/drawResponse', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload, playerId: this.playerId })
         })
@@ -94,7 +94,7 @@ export default class ChessApi {
     }
     async resign(gameId) {
         const payload = { resign: true }
-        const res = await this.api.fetchJSON('/resign', {
+        const res = await this.api.fetchJSON('/api/chess/resign', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload, playerId: this.playerId })
         })
@@ -102,7 +102,7 @@ export default class ChessApi {
     }
     async claimDraw(gameId) {
         const payload = { claimDraw: true }
-        const res = await this.api.fetchJSON('/claimDraw', {
+        const res = await this.api.fetchJSON('/api/chess/claimDraw', {
             method: 'POST',
             body: JSON.stringify({ gameId, payload, playerId: this.playerId })
         })
