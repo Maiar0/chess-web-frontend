@@ -1,5 +1,5 @@
 export default class Api{
-    constructor(defualtUrl){
+    constructor(defualtUrl = ''){
         const envUrl = import.meta.env.VITE_API_URL; //const envUrl = process.env.VITE_API_URL;
         console.log('Computed baseUrl:', envUrl ? envUrl : defualtUrl);
         this.baseUrl = envUrl ? envUrl : defualtUrl;
@@ -11,19 +11,23 @@ export default class Api{
         }
     }
 
-    async fetchJSON(endpoint, options = {headers: "POST"} ){
+    async fetchJSON(endpoint, options = {}){
         const playerId = this.playerId
         options.headers = {
-            ...options.headers,
-            'Content-Type' : 'application/json'
+            'Content-Type' : 'application/json',
+            ...options.headers
         }
         console.log('options', options)
+        console.log('Full URL:', this.baseUrl + endpoint)
         let res
         try{
             res = await fetch(this.baseUrl + endpoint, options)
+            console.log('Response status:', res.status)
+            console.log('Response headers:', res.headers)
+            console.log('Response body:', res.body)
         }catch(err){
             console.error("Network error:", err)
-            window.location.href = "/broken-link"
+            //window.location.href = "/broken-link"
         }
         if(!res.ok){
             const { error } = await res.json();

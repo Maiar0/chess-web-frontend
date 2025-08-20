@@ -22,7 +22,7 @@ import CapturedPieces from '../components/chess/CapturedPieces.vue';
 import GameStatus from '../components/chess/GameStatus.vue';
 import MessagePopup from '../components/utils/MessagePopup.vue';
 import ChessApi from '../api/ChessApi';
-import socket from '../api/ChessSocket';
+//import socket from '../api/ChessSocket';
 import ChoicePopup from '../components/utils/ChoicePopup.vue';
 
 const route = useRoute();
@@ -131,7 +131,7 @@ async function handleColorChoice(choice) {
 
 
 //Handles preload call
-async function initGame(gameId) {
+/*async function initGame(gameId) {
   socket.emit('registerPlayer', localStorage.getItem('chess-player-uuid'));
   socket.emit('joinGame', route.params.gameId);
 
@@ -199,7 +199,7 @@ async function initGame(gameId) {
   } catch (error) {
     console.error('Error fetching game data:', error);
   }
-}
+}*/
 
 async function respondDraw(choice) {
   try {
